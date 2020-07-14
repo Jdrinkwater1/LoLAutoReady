@@ -3,14 +3,19 @@
 #7/13/20
 
 from tkinter import *
-import pyautogui, time,threading
+import pyautogui,threading,time
 root = Tk()
 root.title("LoLAutoReady v1.5")
+
+
+def readySearchStart():
+    t2.start()
+
 def readySearch():
 
     done = False
     count = 0
-
+    readyString.set("Searching for accept button...")
     #look for the accept button on screen, click it if it is 50% accurate
     while not done:
         acceptLocation=pyautogui.locateCenterOnScreen(accept, minSearchTime=9999, confidence=.5)
@@ -28,6 +33,7 @@ def readySearch():
 #if it finds the search denied picture restart the readysearch
 def denied():
         pyautogui.locateOnScreen(denied,minSearchTime=12,confidence=.7)
+        time.sleep(1)
         readySearch()
 
 #close the program
@@ -39,15 +45,19 @@ def exitHit():
 
 
 
-
 t1 = threading.Thread(target=denied)
+t2=threading.Thread(target=readySearch)
+#allow the loops to terminate on exit
+t1.daemon=True
+t2.daemon=True
+
 readyString = StringVar()
 denied = "denied.png"
 accept = "Ready.png"
 
 #Setting up the labels/buttons
 titleLabel= Label(root,text="AutoReady v1.5")
-readyButton= Button(root,text="Ready",padx=40,command=readySearch)
+readyButton= Button(root,text="Ready",padx=40,command=readySearchStart)
 exitButton= Button(root,text="Exit",padx=40,command=exitHit)
 readyLabel= Label(root,textvariable=readyString)
 #Placing the labels and buttons onto the app
